@@ -3409,7 +3409,7 @@ ALTER TABLE logical_volume
 	ADD CONSTRAINT ak_logical_volume_filesystem UNIQUE (logical_volume_id,filesystem_type);
 
 ALTER TABLE logical_volume
-	ADD CONSTRAINT ak_logvol_devid_lvname UNIQUE (device_id,logical_volume_name,logical_volume_type);
+	ADD CONSTRAINT ak_logvol_devid_lvname UNIQUE (device_id,logical_volume_name,logical_volume_type,volume_group_id);
 
 ALTER TABLE logical_volume
 	ADD CONSTRAINT ak_logvol_lv_devid UNIQUE (logical_volume_id);
@@ -4522,9 +4522,11 @@ CREATE TABLE private_key
 	private_key_encryption_type varchar(50)  NOT NULL ,
 	is_active            boolean  NOT NULL ,
 	subject_key_identifier varchar(255)  NULL ,
+	description          varchar(4096)  NULL ,
 	private_key          text  NOT NULL ,
 	passphrase           varchar(255)  NULL ,
-	encryption_key_id    integer  NULL 
+	encryption_key_id    integer  NULL ,
+	external_id          varchar(255)  NULL 
 );
 
 ALTER TABLE private_key
@@ -9441,6 +9443,7 @@ CREATE TABLE x509_signed_certificate
 	subject              varchar(255)  NOT NULL ,
 	friendly_name        varchar(255)  NOT NULL ,
 	subject_key_identifier varchar(255)  NULL ,
+	description          varchar(4096)  NULL ,
 	is_active            boolean  NOT NULL ,
 	is_certificate_authority boolean  NOT NULL ,
 	signing_cert_id      integer  NULL ,
@@ -13476,6 +13479,8 @@ COMMENT ON COLUMN private_key.subject_key_identifier IS 'colon seperate byte hex
 
 COMMENT ON COLUMN private_key.private_key_encryption_type IS 'encryption tyof private key (rsa, dsa, ec, etc).  
 ';
+
+COMMENT ON COLUMN private_key.external_id IS 'opaque id used in remote system to identifty this object.  Used for syncing an authoritative copy.';
 
 COMMENT ON TABLE property IS 'generic mechanism to create arbitrary associations between lhs database objects and assign them to zero or one other database objects/strings/lists/etc.  They are trigger enforced based on characteristics in val_property and val_property_value where foreign key enforcement does not work.';
 
